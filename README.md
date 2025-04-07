@@ -23,16 +23,16 @@ Después de la instalación, podrás proceder con la configuración y prueba del
 ### Paso 2: Genera la clave privada de la CA
 Genera la clave privada de la CA con cifrado AES-256:
 ```ruby
-  openssl genpkey -algorithm RSA -out ca.key -aes256
+  sudo openssl genpkey -algorithm RSA -out ca.key -aes256
 ```
 ### Paso 3: Crea la solicitud de firma de certificado (CSR) para la CA
 ```ruby
-  openssl req -new -key ca.key -out ca.csr -subj "/C=ES/ST=Salamanca/L=Salamanca/O=MiMosquittoCA/CN=MiMosquittoCA"
+  sudo openssl req -new -key ca.key -out ca.csr -subj "/C=ES/ST=Salamanca/L=Salamanca/O=MiMosquittoCA/CN=MiMosquittoCA"
 ```
 ### Paso 4: Crea el certificado de la CA
 Firma el CST con la clave privada de la CA para generar el certificado:
 ```ruby
-  openssl x509 -req -in ca.csr -signkey ca.key -out ca.crt -days 3650
+  sudo openssl x509 -req -in ca.csr -signkey ca.key -out ca.crt -days 3650
 ```
 
 ## 3. Creación de los certificados del servidor
@@ -43,57 +43,57 @@ Firma el CST con la clave privada de la CA para generar el certificado:
 ### Paso 2: Genera la clave privada del servidor
 Genera la clave privada del servidor con cifrado AES-256:
 ```ruby
-  openssl genpkey -algorithm RSA -out server.key -aes256
+  sudo openssl genpkey -algorithm RSA -out server.key -aes256
 ```
 ### Paso 3: Crea la solicitud de firma de certificado (CSR) para el servidor
 ```ruby
-  openssl req -new -key server.key -out server.csr -subj "/C=ES/ST=Salamanca/L=Salamanca/O=MiServidor/CN=192.168.11.8"
+  sudo openssl req -new -key server.key -out server.csr -subj "/C=ES/ST=Salamanca/L=Salamanca/O=MiServidor/CN=192.168.11.8"
 ```
 ### Paso 4: Firma el CSR con la CA para generar el certificado del servidor
 ```ruby
-  openssl x509 -req -in server.csr -CA /etc/mosquitto/ca_certificates/ca.crt -CAkey /etc/mosquitto/ca_certificates/ca.key -CAcreateserial -out server.crt -days 3650
+  sudo openssl x509 -req -in server.csr -CA /etc/mosquitto/ca_certificates/ca.crt -CAkey /etc/mosquitto/ca_certificates/ca.key -CAcreateserial -out server.crt -days 3650
 ```
 
 ## 4. Creación de los certificados del cliente
 ### Paso 1: Genera la clave privada del cliente
 ```ruby
-  openssl genpkey -algorithm RSA -out client.key -aes256
+  sudo openssl genpkey -algorithm RSA -out client.key -aes256
 ```
 ### Paso 2: Crea la solicitud de firma de certificado (CSR) para el cliente
 ```ruby
-  openssl req -new -key client.key -out client.csr -subj "/C=ES/ST=Salamanca/L=Salamanca/O=MiCliente/CN=cliente1"
+  sudo openssl req -new -key client.key -out client.csr -subj "/C=ES/ST=Salamanca/L=Salamanca/O=MiCliente/CN=cliente1"
 ```
 ### Paso 3: Firma el CSR con la CA para generar el certificado del cliente
 ```ruby
-  openssl x509 -req -in client.csr -CA /etc/mosquitto/ca_certificates/ca.crt -CAkey /etc/mosquitto/ca_certificates/ca.key -CAcreateserial -out client.crt -days 3650
+  sudo openssl x509 -req -in client.csr -CA /etc/mosquitto/ca_certificates/ca.crt -CAkey /etc/mosquitto/ca_certificates/ca.key -CAcreateserial -out client.crt -days 3650
 ```
 ### Paso 4: Verifica los certificados generados
 Verifica que los certificados del servidor y del cliente sean válidos:
 ```ruby
-  openssl verify -CAfile /etc/mosquitto/ca_certificates/ca.crt /etc/mosquitto/certs/server.crt
-  openssl verify -CAfile /etc/mosquitto/ca_certificates/ca.crt /etc/mosquitto/certs/client.crt
+  sudo openssl verify -CAfile /etc/mosquitto/ca_certificates/ca.crt /etc/mosquitto/certs/server.crt
+  sudo openssl verify -CAfile /etc/mosquitto/ca_certificates/ca.crt /etc/mosquitto/certs/client.crt
 ```
 Ambos deberían devolver:
 - `server.crt: OK`
--  `client.crt: OK`
+- `client.crt: OK`
 
 ## 5.	Configuración de la autenticación con contraseña
 ### Paso 1: Generar un archivo de contraseñas para el usuario admin
 ```ruby
-  mosquitto_passwd -c /etc/mosquitto/passwd admin
+  sudo mosquitto_passwd -c /etc/mosquitto/passwd admin
 ```
 ### Paso 2: Protege el archivo de contraseñas
 Asegúrate de que el archivo de contraseñas sea accesible solo por el usuario y grupo de Mosquitto:
 ```ruby
-  chown mosquitto:mosquitto /etc/mosquitto/passwd
-  chmod 440 /etc/mosquitto/passwd
+  sudo chown mosquitto:mosquitto /etc/mosquitto/passwd
+  sudo chmod 440 /etc/mosquitto/passwd
 ```
 
 ## 6.	Configuración del archivo de Mosquitto
 ### Paso 1: Edita el archivo de configuración de Mosquitto
 Edita el archivo de configuración de Mosquitto para habilitar TLS y la autenticación por contraseña.
 ```ruby
-  nano /etc/mosquitto/mosquitto.conf
+  sudo nano /etc/mosquitto/mosquitto.conf
 ```
 ### Paso 2: Configuración en el archivo mosquitto.conf
 Agrega las siguientes líneas en el archivo de configuración:
@@ -117,21 +117,21 @@ Agrega las siguientes líneas en el archivo de configuración:
 ```
 ### Paso 3: Reinicia Mosquitto
 ```ruby
-  systemctl restart mosquitto
+  sudo systemctl restart mosquitto
 ```
 
 ## 7.	Eliminar la contraseña de las claves privadas
 ### Paso 1: Elimina la contraseña de la clave del servidor
 ```ruby
-  openssl rsa -in /etc/mosquitto/certs/server.key -out /etc/mosquitto/certs/server.key
+  sudo openssl rsa -in /etc/mosquitto/certs/server.key -out /etc/mosquitto/certs/server.key
 ```
 ### Paso 2: Elimina la contraseña de la clave del cliente
 ```ruby
-  openssl rsa -in /etc/mosquitto/certs/client.key -out /etc/mosquitto/certs/client.key
+  sudo openssl rsa -in /etc/mosquitto/certs/client.key -out /etc/mosquitto/certs/client.key
 ```
 ### Paso 3: Reinicia Mosquitto nuevamente
 ```ruby
-  systemctl restart mosquitto
+  sudo systemctl restart mosquitto
 ```
 
 ## 8.	Pruebas de Publicación y Suscripción
