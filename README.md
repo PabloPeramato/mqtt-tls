@@ -47,8 +47,9 @@ Genera la clave privada del servidor con cifrado AES-256:
 ```
 ### Paso 3: Crea la solicitud de firma de certificado (CSR) para el servidor
 ```ruby
-  sudo openssl req -new -key server.key -out server.csr -subj "/C=ES/ST=Salamanca/L=Salamanca/O=MiServidor/CN=192.168.11.8"
+  sudo openssl req -new -key server.key -out server.csr -subj "/C=ES/ST=Salamanca/L=Salamanca/O=MiServidor/CN={ip_address}"
 ```
+- `{ip_address}`: cambiar este valor por la dirección IP del equipo en el que se hospedará el broker.
 ### Paso 4: Firma el CSR con la CA para generar el certificado del servidor
 ```ruby
   sudo openssl x509 -req -in server.csr -CA /etc/mosquitto/ca_certificates/ca.crt -CAkey /etc/mosquitto/ca_certificates/ca.key -CAcreateserial -out server.crt -days 3650
@@ -139,13 +140,13 @@ Para realizar pruebas de conexión, utiliza los siguientes comandos de suscripci
 ### Comando para Publicar un Mensaje
 Este comando publicará un mensaje en el tópico test/prueba:
 ```ruby
-  mosquitto_pub -h 192.168.11.8 -p 8883 -t "test/prueba" \
+  mosquitto_pub -h {ip_address} -p 8883 -t "test/prueba" \
     --cafile /etc/mosquitto/ca_certificates/ca.crt \
     --cert /etc/mosquitto/certs/client.crt \
     --key /etc/mosquitto/certs/client.key \
     -m "Este es un mensaje de prueba" -u "admin" -P "proxmox.rpi" -d
 ```
-•	`-h 192.168.11.8`: Dirección IP del servidor Mosquitto.
+•	`-h {ip_address}`: Dirección IP del servidor Mosquitto. Cambiar este valor por la dirección IP del equipo en el que se hospedará el broker.
 •	`-p 8883`: Puerto en el que se conecta (8883 es para TLS).
 •	`-t "test/prueba"`: El tópico en el que se publica el mensaje.
 •	`--cafile`: Ruta al archivo de certificado de la CA.
@@ -158,13 +159,13 @@ Este comando publicará un mensaje en el tópico test/prueba:
 ### Comando para Suscribirse a un Tópico
 Este comando se suscribirá al tópico #, que suscribe a todos los mensajes publicados en cualquier tópico:
 ```ruby
-  mosquitto_sub -h 192.168.11.8 -p 8883 -t "#" \
+  mosquitto_sub -h {ip_address} -p 8883 -t "#" \
     --cafile /etc/mosquitto/ca_certificates/ca.crt \
     --cert /etc/mosquitto/certs/client.crt \
     --key /etc/mosquitto/certs/client.key \
     -u "admin" -P "proxmox.rpi" -d
 ```
-•	`-h 192.168.11.8`: Dirección IP del servidor Mosquitto.
+•	`-h {ip_address}`: Dirección IP del servidor Mosquitto. Cambiar este valor por la dirección IP del equipo en el que se hospedará el broker.
 •	`-p 8883`: Puerto en el que se conecta (8883 es para TLS).
 •	`-t "#"`: Se suscribe a todos los tópicos.
 •	`--cafile`: Ruta al archivo de certificado de la CA.
