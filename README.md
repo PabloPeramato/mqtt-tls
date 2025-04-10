@@ -145,7 +145,7 @@ mosquitto_pub -h {ip_address} -p 8883 -t "test/prueba" \
   --cafile /etc/mosquitto/ca_certificates/ca.crt \
   --cert /etc/mosquitto/certs/client.crt \
   --key /etc/mosquitto/certs/client.key \
-  -m "Este es un mensaje de prueba" -u "admin" -P "proxmox.rpi" -d
+  -m "Este es un mensaje de prueba" -u "admin" -P "proxmox.rpi" --insecure -d
 ```
 •	`-h {ip_address}`: Dirección IP del servidor Mosquitto. Cambiar este valor por la dirección IP del equipo en el que se hospedará el broker.
 •	`-p 8883`: Puerto en el que se conecta (8883 es para TLS).
@@ -164,7 +164,7 @@ mosquitto_sub -h {ip_address} -p 8883 -t "#" \
   --cafile /etc/mosquitto/ca_certificates/ca.crt \
   --cert /etc/mosquitto/certs/client.crt \
   --key /etc/mosquitto/certs/client.key \
-  -u "admin" -P "proxmox.rpi" -d
+  -u "admin" -P "proxmox.rpi" --insecure -d
 ```
 •	`-h {ip_address}`: Dirección IP del servidor Mosquitto. Cambiar este valor por la dirección IP del equipo en el que se hospedará el broker.
 •	`-p 8883`: Puerto en el que se conecta (8883 es para TLS).
